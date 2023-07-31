@@ -1,0 +1,12 @@
+__pycache__
+*.egg-info
+.pytest_cache
+.ipynb_checkpoints
+.venv
+.vscode
+.mypy_cache
+
+drafts
+events.out.tfevents*
+data
+.DS_Store
