@@ -11,12 +11,12 @@ class MaskedEncoder(nn.Module):
     ):
         super().__init__()
 
-        self.patch_embed = PatchEmbedding(img_size, patch_size, in_chans, out_chans)
-        num_patches = self.patch_embed.num_patches
+        self.patch_embed = PatchEmbed(img_size, patch_size, in_chans, out_chans)
+        self.num_patches = self.patch_embed.num_patches
 
         self.cls_token = nn.Parameter(torch.zeros(1, 1, out_chans))
         self.pos_embed = nn.Parameter(
-            torch.zeros(1, num_patches + 1, out_chans), requires_grad=False
+            torch.zeros(1, self.num_patches + 1, out_chans), requires_grad=False
         )  # fixed sin-cos embedding
 
         # hidden_dim = int(out_chans * mlp_ratio)
@@ -29,7 +29,7 @@ class MaskedEncoder(nn.Module):
         self.blocks = nn.ModuleList(
             [
                 Block(
-                    embed_dim,
+                    out_chans,
                     num_heads,
                     mlp_ratio,
                     qkv_bias=True,

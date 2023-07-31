@@ -35,7 +35,7 @@ class MaskedDecoder(nn.Module):
         self.blocks = nn.ModuleList(
             [
                 Block(
-                    embed_dim,
+                    out_chans,
                     num_heads,
                     mlp_ratio,
                     qkv_bias=True,

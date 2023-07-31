@@ -19,6 +19,8 @@ class MaskedAutoencoder(nn.Module):
         decoder_depth=2,
     ):
         super().__init__()
+        
+        self.patch_size = patch_size
 
         self.encoder = MaskedEncoder(
             img_size,
@@ -45,13 +47,12 @@ class MaskedAutoencoder(nn.Module):
         images: (N, 3, H, W)
         x: (N, L, patch_size**2 *3)
         """
-        p = self.encoder.patch_embed.patch_size
-        assert images.shape[2] == images.shape[3] and images.shape[2] % p == 0
+        assert images.shape[2] == images.shape[3] and images.shape[2] % self.patch_size == 0
 
-        h = w = images.shape[2] // p
-        x = images.reshape(shape=(images.shape[0], 3, h, p, w, p))
+        h = w = images.shape[2] // self.patch_size
+        x = images.reshape(shape=(images.shape[0], 3, h, self.patch_size, w, self.patch_size))
         x = torch.einsum("nchpwq->nhwpqc", x)
-        x = x.reshape(shape=(images.shape[0], h * w, p**2 * 3))
+        x = x.reshape(shape=(images.shape[0], h * w, self.patch_size**2 * 3))
         return x
 
     def unpatchify(self, x):
@@ -59,13 +60,12 @@ class MaskedAutoencoder(nn.Module):
         x: (N, L, patch_size**2 *3)
         images: (N, 3, H, W)
         """
-        p = self.encoder.patch_embed.patch_size
         h = w = int(x.shape[1] ** 0.5)
         assert h * w == x.shape[1]
 
-        x = x.reshape(shape=(x.shape[0], h, w, p, p, 3))
+        x = x.reshape(shape=(x.shape[0], h, w, self.patch_size, self.patch_size, 3))
         x = torch.einsum("nhwpqc->nchpwq", x)
-        images = x.reshape(shape=(x.shape[0], 3, h * p, h * p))
+        images = x.reshape(shape=(x.shape[0], 3, h * self.patch_size, h * self.patch_size))
 
         return images
 
