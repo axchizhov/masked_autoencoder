@@ -8,8 +8,8 @@ from itertools import chain
 
 
 def plot_reconstructed(images: torch.Tensor, reconstructed: torch.Tensor):
-    images = images.permute(0, 2, 3, 1).detach().numpy()
-    reconstructed = reconstructed.permute(0, 2, 3, 1).detach().numpy()
+    images = images.permute(0, 2, 3, 1).detach().cpu().numpy()
+    reconstructed = reconstructed.permute(0, 2, 3, 1).detach().cpu().numpy()
 
     figure = plt.figure(figsize=(9,2))
 

@@ -45,7 +45,7 @@ class PatchEmbedding(nn.Module):
         # Create positional encoding of the size to be concatenated with the patches
         self.pos_encoding = PositionalEncoding(
             sequence_len=self.num_patches, output_dim=embed_dim, n=1000
-        )#.to(device)
+        ).to(device)
 
         # Define the class token, which will be added to the sequence of patch embeddings
         # The class token is learnable and will be used to predict the class of the image
