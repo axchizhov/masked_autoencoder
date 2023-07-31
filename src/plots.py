@@ -16,10 +16,12 @@ def plot_reconstructed(images: torch.Tensor, reconstructed: torch.Tensor):
     for i, img in enumerate(images[:9]):
         plt.subplot(2, 9, i+1)
         plt.imshow(img)
+        plt.axis('off')
 
     for i, img in enumerate(reconstructed[:9]):
         plt.subplot(2, 9, 9+i+1)
         plt.imshow(img)
+        plt.axis('off')
 
     plt.show()
 
