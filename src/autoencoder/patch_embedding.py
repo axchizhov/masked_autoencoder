@@ -24,10 +24,9 @@ class PatchEmbedding(nn.Module):
         super().__init__()
         self.img_size = img_size
         self.patch_size = patch_size
-        
-        # TODO: remove the hack
-        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        
+
+        # TODO: remove
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
         # Calculate the total number of patches in the image
         self.num_patches = (img_size // patch_size) * (img_size // patch_size)
