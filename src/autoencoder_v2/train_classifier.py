@@ -1,6 +1,6 @@
 import argparse
 import math
-import os
+from datetime import datetime
 
 import torch
 import torch.nn as nn
@@ -21,8 +21,8 @@ if __name__ == '__main__':
     parser.add_argument('--weight_decay', type=float, default=0.05)
     parser.add_argument('--total_epoch', type=int, default=100)
     parser.add_argument('--warmup_epoch', type=int, default=5)
-    parser.add_argument('--pretrained_model_path', type=str, default=None)
-    parser.add_argument('--output_model_path', type=str, default='vit-t-classifier-from_scratch.pt')
+    parser.add_argument('--pretrained_model_path', type=str, default='vit-t-mae.pt')
+    parser.add_argument('--output_model_path', type=str, default='vit-t-classifier-pretrained.pt')
 
     args = parser.parse_args()
 
@@ -34,18 +34,19 @@ if __name__ == '__main__':
     assert batch_size % load_batch_size == 0
     steps_per_update = batch_size // load_batch_size
 
-    train_dataset = torchvision.datasets.CIFAR10('data', train=True, download=True, transform=Compose([ToTensor(), Normalize(0.5, 0.5)]))
-    val_dataset = torchvision.datasets.CIFAR10('data', train=False, download=True, transform=Compose([ToTensor(), Normalize(0.5, 0.5)]))
+    train_dataset = torchvision.datasets.CIFAR10('data', train=True, download=True, transform=Compose([ToTensor(), Normalize((0.4914, 0.4822, 0.4465), (0.247, 0.243, 0.261))]))
+    val_dataset = torchvision.datasets.CIFAR10('data', train=False, download=True, transform=Compose([ToTensor(), Normalize((0.4914, 0.4822, 0.4465), (0.247, 0.243, 0.261))]))
     train_dataloader = torch.utils.data.DataLoader(train_dataset, load_batch_size, shuffle=True, num_workers=4)
     val_dataloader = torch.utils.data.DataLoader(val_dataset, load_batch_size, shuffle=False, num_workers=4)
-    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     if args.pretrained_model_path is not None:
-        model = torch.load(args.pretrained_model_path, map_location='cpu')
-        writer = SummaryWriter(os.path.join('logs', 'cifar10', 'pretrain-cls'))
+        model = torch.load(args.pretrained_model_path, map_location=device)
+        writer = SummaryWriter(f'logs/clf_pretrained_train {timestamp}')
     else:
         model = MAE_ViT()
-        writer = SummaryWriter(os.path.join('logs', 'cifar10', 'scratch-cls'))
+        writer = SummaryWriter(f'logs/clf_fromscratch_train {timestamp}')
     model = ViT_Classifier(model.encoder, num_classes=10).to(device)
 
     loss_fn = nn.CrossEntropyLoss()
@@ -58,11 +59,11 @@ if __name__ == '__main__':
     best_val_acc = 0
     step_count = 0
     optim.zero_grad()
-    for e in range(args.total_epoch):
+    for e in tqdm(range(args.total_epoch)):
         model.train()
         losses = []
         acces = []
-        for img, label in tqdm(iter(train_dataloader)):
+        for img, label in tqdm(iter(train_dataloader), leave=False):
             step_count += 1
             img = img.to(device)
             label = label.to(device)
@@ -81,7 +82,7 @@ if __name__ == '__main__':
         print(f'In epoch {e}, average training loss is {avg_train_loss}, average training acc is {avg_train_acc}.')
 
         model.eval()
-        with torch.no_grad():
+        with torch.inference_mode():
             losses = []
             acces = []
             for img, label in tqdm(iter(val_dataloader)):
