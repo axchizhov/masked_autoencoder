@@ -14,7 +14,7 @@
 
 [![Papers with code leaderboard](/assets/leaderboard.png 'Leaderboard')](https://paperswithcode.com/sota/self-supervised-image-classification-on)
 
-В итоге остановился на идеи из статьи [Masked Autoencoders Are Scalable Vision Learners](https://arxiv.org/abs/2111.06377).
+В итоге остановился на идее из статьи [Masked Autoencoders Are Scalable Vision Learners](https://arxiv.org/abs/2111.06377).
 
 Архитектура основа на трансформерах и выглядит так:
 ![Архитектура](assets/mae_arch.png)
