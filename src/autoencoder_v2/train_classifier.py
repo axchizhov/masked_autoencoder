@@ -10,7 +10,8 @@ from torchvision.transforms import Compose, Normalize, ToTensor
 from tqdm import tqdm
 
 from src.autoencoder_v2.model import MAE_ViT, ViT_Classifier
-from src.autoencoder_v2.utils import setup_seed
+from src.utils import setup_seed
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

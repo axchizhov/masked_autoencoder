@@ -11,7 +11,10 @@ def setup_seed(seed=42):
     random.seed(seed)
     torch.backends.cudnn.deterministic = True
 
-def model_info(model):
+
+def model_info(model, depth=2):
     input_size = [1, 3, 32, 32]
     col_names=['output_size', 'num_params', 'trainable']
-    torchinfo.summary(model, input_size, depth=2)
+    out = torchinfo.summary(model, input_size, depth=depth)
+    
+    print(out)
