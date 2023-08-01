@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 from timm.models.vision_transformer import Block, PatchEmbed
 
-from src.patch_embedding import PatchEmbedding
+# from src.autoencoder.patch_embedding import PatchEmbedding
 
 
 class MaskedEncoder(nn.Module):
@@ -71,7 +71,7 @@ class MaskedEncoder(nn.Module):
 
         return x_masked, mask, ids_restore
 
-    def forward(self, x, mask_ratio=0.75):
+    def forward(self, x, mask_ratio=0.60):
         x = self.patch_embed(x)
 
         # add pos embed w/o cls token
