@@ -6,7 +6,5 @@ __pycache__
 .vscode
 .mypy_cache
 
-drafts
-events.out.tfevents*
 data
 .DS_Store
